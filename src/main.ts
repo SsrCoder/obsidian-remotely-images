@@ -83,15 +83,16 @@ export default class RemotelyImagesPlugin extends Plugin {
 		// this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
 	}
 
-	async customPasteEventCallback(e: ClipboardEvent, editor: Editor, markdownView: MarkdownView) {
+	async customPasteEventCallback(e: ClipboardEvent, editor: Editor, _: MarkdownView) {
 		const { files } = e.clipboardData!;
-		console.log(files);
+		if (files.length === 0) {
+			return
+		}
 		e.preventDefault();
 
 		for (let i = 0; i < files.length; i++) {
 			const filename = this.formatFilename(this.settings.rename, files[i].name);
 			let url = await this.uploadFile(filename, files[i]);
-			// editor.setValue(`![${filename}](${url})`);
 			editor.replaceRange(`![${filename}](${url})`, editor.getCursor());
 		}
 	}
